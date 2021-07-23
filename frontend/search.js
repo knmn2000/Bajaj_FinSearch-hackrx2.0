@@ -1,5 +1,6 @@
 const icon = document.querySelector('.icon');
 const search = document.querySelector('.search');
+const esroute = 'http://localhost:3000/';
 var xhttp = new XMLHttpRequest();
 
 function debounce(func, wait, immediate) {
@@ -18,18 +19,15 @@ function debounce(func, wait, immediate) {
   };
 }
 
+function success(text) {
+  console.log('hogaya');
+  console.log(text);
+}
 function getResults() {
-  console.log(document.getElementById('mysearch').value);
-  // TODO: GET REQUEST
+  const query = document.getElementById('mysearch').value;
+  const url = esroute + query;
+  console.log($.get(url));
 }
 
 // #
-// var query = {
-//   query: {
-//     multi_match: {
-//       query: 'travel insurance',
-//       fields: ['heading', 'text'],
-//     },
-//   },
-// };
 //   #

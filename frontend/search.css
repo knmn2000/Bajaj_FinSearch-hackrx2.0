@@ -4,6 +4,12 @@
 	box-sizing: border-box;
 }
 
+a:visited {
+	color: #0f6fff;
+}
+a:link{
+	color: #0f6fff;
+}
 @font-face {
 	font-family: 'organetto';
 	src: url('assets/Organetto/Organetto-Bold.ttf'); 

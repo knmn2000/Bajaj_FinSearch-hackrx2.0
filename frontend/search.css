@@ -8,6 +8,40 @@
 	font-family: 'organetto';
 	src: url('assets/Organetto/Organetto-Bold.ttf'); 
 }
+.wiki-search-results{
+  width: 100%;
+  border-radius: 25px;
+  margin-top: 10px;
+  opacity: 100%;
+  padding: 15px;
+  background-color: white;
+  box-shadow : 0 0 1px 0 #000;}
+
+ .header{
+	font-family: Arial, Helvetica, sans-serif; 
+	font-weight: 700;
+	font-size: 20px;
+	padding-left: 10px;
+
+ }
+ .time{
+	 color: #f9f9f9;
+	 opacity: 80%;
+	padding: 15px 5px 10px 5px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	text-align: center;
+	font-style: italic;
+	font-weight: 700;
+ }
+ .resulttext{
+	 padding-top:3px;
+	font-family: Arial, Helvetica, sans-serif; 
+	font-weight: 200;
+	font-size: 15px;
+	padding-left: 10px;
+
+ }
 .bajaj{
     padding: 15px;
     font-size: 56px;
@@ -26,6 +60,7 @@ body {
 .search {
 	width: 60px;
 	height: 60px;
+	opacity: 80%;
 	transform: 0.5s;
 	background: #fff;
 	overflow: hidden;

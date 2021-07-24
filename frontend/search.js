@@ -38,17 +38,34 @@ const getResults = () => {
   http.onreadystatechange = (e) => {
     if (http.readyState == 4 && http.status == 200) {
       try {
-        console.log(JSON.parse(http.responseText));
-        response = JSON.parse(http.responseText);
+        console.log(JSON.parse(http.responseText)[0]);
+        response = JSON.parse(http.responseText)[0];
+        responseSponsored = JSON.parse(http.responseText)[1];
         timeTaken = response['body']['took'];
-        console.log(response['body']['hits']['hits']);
+        document.getElementById(
+          'time'
+        ).innerHTML = `Fetched results in ${timeTaken}ms`;
+        responseSponsored = responseSponsored['body']['hits']['hits'][0];
+        if (responseSponsored) {
+          document
+            .getElementById('searchresults')
+            .appendChild(
+              createResultCard(
+                responseSponsored['_source']['heading'],
+                truncateString(responseSponsored['_source']['text'], 100),
+                responseSponsored['_source']['source'],
+                true
+              )
+            );
+        }
+        // const finalResponse = responseSponsored['body']['hits']['hits'].concat(
+        //   response['body']['hits']['hits']
+        // );
         response['body']['hits']['hits'].forEach((card) => {
+          // finalResponse.forEach((card) => {
           var header = card['_source']['heading'];
-          var source = card['_source']['source'];
           var text = truncateString(card['_source']['text'], 100);
-          document.getElementById(
-            'time'
-          ).innerHTML = `Fetched results in ${timeTaken}ms`;
+          var source = card['_source']['source'];
           document
             .getElementById('searchresults')
             .appendChild(createResultCard(header, text, source));
@@ -70,9 +87,12 @@ mysearch.addEventListener('click', function () {
   getResults();
 });
 
-function createResultCard(header, text, source) {
+function createResultCard(header, text, source, sponsored = false) {
   var z = document.createElement('div');
-  z.innerHTML = `<div class="wiki-search-results">
+  z.innerHTML = `<div class="wiki-search-results ${
+    sponsored ? 'sponsored' : ''
+  }">
+       ${sponsored ? "<div class='sponsoredtext'>Promoted</div>" : ''}
        <a href="${source}" target="_blank"> <div class='header'>
             ${header}
         </div></a>

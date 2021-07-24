@@ -48,11 +48,13 @@ class ScrapeBajajFinserv(scrapy.Spider):
             json.dump(self.scraped, f)
 
     def start_requests(self):
-        for link in self.links:
-            sitemapLink = link.split(".html")[0] + "/sitemap.xml"
-            yield scrapy.Request(url=sitemapLink, callback=self.parseSitemap)
+        # for link in self.links:
+        #     sitemapLink = link.split(".html")[0] + "/sitemap.xml"
+        #     yield scrapy.Request(url=sitemapLink, callback=self.parseSitemap)
         # for link in self.links:
         #     yield scrapy.Request(url=link, callback=self.parse)
+        for link in self.links:
+            yield scrapy.Request(url=link, callback=self.parse_priority)
 
     def parseSitemap(self, response):
         sitemapLinks = re.findall(
@@ -64,6 +66,66 @@ class ScrapeBajajFinserv(scrapy.Spider):
             link = link[0] + "://" + link[1] + link[2]
             if "sitemap.org" not in link:
                 yield scrapy.Request(url=link, callback=self.parse)
+
+    def parse_priority(self, response):
+        # <IDEAS>
+        # print(response.xpath("//section[@class='paragraph-rte ']/h2//text()"))
+        # print(response.xpath("//*/p[preceding-sibling::h2]"))
+        # get all tags between h2
+        # response.xpath("//*[preceding-sibling::h2[1] and following-sibling::h2[1]]")[
+        # content = response.xpath("//div[contains(@class, 'parawithrte')]//h2")
+        # </IDEAS>
+
+        content = response.xpath("//div[contains(@class, 'parawithrte')]//*")
+        headerContentScraped = {}
+        lastH2 = None
+        webpageScraped = ""
+        webtextScraped = ""
+        payload = {}
+        for tag in content:
+            if tag.xpath("name()").get() == "h2":
+                lastH2 = bs(tag.get(), "html.parser").find(text=True)
+                webpageScraped = ""
+                webtextScraped = ""
+            else:
+                if lastH2:
+                    if lastH2 in headerContentScraped:
+                        # if lastH2 == payload["heading"]:
+                        webpageScraped = webpageScraped + tag.get().strip().replace(
+                            "  ", ""
+                        )
+                        webtextScraped = webtextScraped + " ".join(
+                            bs(
+                                tag.get().strip().replace("  ", ""), "html.parser"
+                            ).findAll(text=True)
+                        ).replace("\n", "")
+                    else:
+                        webpageScraped = tag.get().strip().replace("  ", "")
+                        webtextScraped = " ".join(
+                            bs(
+                                tag.get().strip().replace("  ", ""), "html.parser"
+                            ).findAll(text=True)
+                        ).replace("\n", "")
+            headerContentScraped[lastH2] = {
+                # "html": webpageScraped,
+                "html": "HTML CONTENT",
+                "text": webtextScraped,
+            }
+        # TODO
+        # UPLOAD INDIVIDUAL HEADER DOCS TO ELASTIC SEARCH INSTEAD OF THE WHOLE JSON
+        # self.scraped[response.url] = headerContentScraped
+        for heading in headerContentScraped:
+            if heading:
+                payload = {
+                    "heading": heading,
+                    "html": headerContentScraped[heading]["html"],
+                    "text": headerContentScraped[heading]["text"],
+                    "source": response.url,
+                }
+                # self.scraped[len(self.scraped)] = payload
+                es.index(index="bajajfinsearchsponsored", doc_type="Blog", body=payload)
+                # print(heading)
+                return
 
     def parse(self, response):
         # <IDEAS>

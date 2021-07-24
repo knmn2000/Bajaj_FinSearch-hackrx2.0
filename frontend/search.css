@@ -30,6 +30,17 @@ a:link{
 	padding-left: 10px;
 
  }
+ .sponsored{
+	 background-color: antiquewhite;
+ }
+ .sponsoredtext{
+	     padding: 0px 0px 5px 10px;
+    font-family: arial;
+    font-size: 12px;
+    text-decoration: underline;
+    font-weight: 800;
+	font-style: italic;
+ }
  .time{
 	 color: #f9f9f9;
 	 opacity: 80%;

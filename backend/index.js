@@ -57,6 +57,8 @@ server.get('/:slug', async (req, res) => {
           multi_match: {
             query: searchText,
             fields: fieldsArray,
+            fuzziness: 'AUTO',
+            type: 'most_fields',
           },
         },
       },
@@ -66,8 +68,27 @@ server.get('/:slug', async (req, res) => {
       maxRetries: 3,
     }
   );
-  console.log(result);
-  return res.send(result);
+  const resultSponsored = await client.search(
+    {
+      index: 'bajajfinsearchsponsored',
+      size: 8,
+      body: {
+        query: {
+          multi_match: {
+            query: searchText,
+            fields: fieldsArray,
+            fuzziness: 'AUTO',
+            type: 'most_fields',
+          },
+        },
+      },
+    },
+    {
+      ignore: [404],
+      maxRetries: 3,
+    }
+  );
+  return res.send([result, resultSponsored]);
 });
 
 server.listen(PORT, () => {

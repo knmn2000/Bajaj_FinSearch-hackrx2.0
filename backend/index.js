@@ -7,38 +7,11 @@ const client = new Client({
   node: 'http://localhost:9200',
 });
 
-server.get('/autosuggest/:slug', async (req, res) => {
-  var keywords = req.params.slug;
-  await client
-    .search({
-      index: 'bajajfinsearch',
-      body: {
-        suggest: {
-          suggestion: {
-            text: keywords,
-            term: {
-              field: 'text',
-            },
-          },
-        },
-      },
-    })
-    .then((response) => {
-      var result = [];
-      response['body']['suggest']['suggestion'].forEach((suggestion) => {
-        suggestionKeyword = suggestion['options'][0];
-        if (suggestionKeyword) {
-          result.push(suggestionKeyword['text']);
-        } else {
-        }
-      });
-
-      console.log(result);
-    });
-});
 // Returning queried results
-server.get('/:slug', async (req, res) => {
+server.get('/:slug/:autosuggest', async (req, res) => {
   const searchText = req.params.slug;
+  const autosuggest = req.params.autosuggest === 'true' ? true : false;
+  console.log(autosuggest);
   var fieldsArray;
   var keywords = searchText.split(' ');
   if (keywords.length > 3) {
@@ -49,7 +22,7 @@ server.get('/:slug', async (req, res) => {
   const result = await client.search(
     {
       index: 'bajajfinsearch',
-      size: 8,
+      size: autosuggest ? 3 : 8,
       body: {
         query: {
           multi_match: {
@@ -70,7 +43,7 @@ server.get('/:slug', async (req, res) => {
   const resultSponsored = await client.search(
     {
       index: 'bajajfinsearchsponsored',
-      size: 8,
+      size: 2,
       body: {
         query: {
           multi_match: {

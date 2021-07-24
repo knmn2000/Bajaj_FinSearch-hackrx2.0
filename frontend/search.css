@@ -30,6 +30,14 @@ a:link{
 	padding-left: 10px;
 
  }
+
+ .suggestionheader{
+	font-family: Arial, Helvetica, sans-serif; 
+	font-weight: 700;
+	font-size: 15px;
+	text-align:center;
+
+ }
  .sponsored{
 	 background-color: antiquewhite;
  }
@@ -90,6 +98,23 @@ body {
 	width: 100%;
 }
 
+.suggestion{
+
+	width: 70%;
+	height: 35px;
+	margin-top: 4px;
+	margin-left: 16%;
+	padding-top: 10px;
+	opacity: 80%;
+	transform: 0.5s;
+	background: rgb(235, 235, 235);
+	overflow: hidden;
+	position: relative;
+	border-radius: 15px;
+	box-shadow: 0 0 0 0 5px #2573ef;
+
+
+}
 .search .icon {
 	top: 0;
 	left: 0;

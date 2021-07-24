@@ -13,8 +13,9 @@ function truncateString(str, num) {
 }
 
 const getResults = () => {
+  document.getElementById('searchresults').innerHTML = '';
   const query = document.getElementById('mysearch').value;
-  const url = esroute + query;
+  const url = esroute + query + '/false';
   var response;
   var timeTaken;
   http.open('GET', url);
@@ -59,7 +60,6 @@ const getResults = () => {
 
 var mysearch = document.getElementById('searchicon');
 mysearch.addEventListener('click', function () {
-  document.getElementById('searchresults').innerHTML = '';
   getResults();
 });
 
@@ -82,6 +82,15 @@ function createResultCard(header, text, source, sponsored = false) {
     </div>`;
   return z;
 }
+function createResultSuggestion(header, text, source, sponsored = false) {
+  var z = document.createElement('div');
+  z.innerHTML = `<div class="suggestion" onclick="getResults();">
+        <div class='suggestionheader'>
+            ${header}
+        </div>
+    </div>`;
+  return z;
+}
 
 function debounce(func, wait, immediate) {
   var timeout;
@@ -100,15 +109,24 @@ function debounce(func, wait, immediate) {
 }
 
 var autoSuggest = debounce(function () {
+  document.getElementById('searchresults').innerHTML = '';
   const query = document.getElementById('mysearch').value;
   console.log(query);
-  const url = esroute + 'autosuggest/' + query;
+  const url = esroute + query + '/true';
   http.open('GET', url);
   http.send();
   http.onreadystatechange = (e) => {
     if (http.readyState == 4 && http.status == 200) {
       try {
-        console.log(http.responseText);
+        response = JSON.parse(http.responseText)[0];
+        response['body']['hits']['hits'].forEach((card) => {
+          var header = card['_source']['heading'];
+          var text = truncateString(card['_source']['text'], 100);
+          var source = card['_source']['source'];
+          document
+            .getElementById('searchresults')
+            .appendChild(createResultSuggestion(header, text, source));
+        });
       } catch (error) {
         console.log(error);
       }

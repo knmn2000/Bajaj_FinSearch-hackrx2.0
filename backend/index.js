@@ -88,6 +88,19 @@ server.get('/:slug', async (req, res) => {
       maxRetries: 3,
     }
   );
+  result['body']['hits']['hits'].forEach(async (res) => {
+    var newCount = res['_source']['count'] ? res['_source']['count'] : 0;
+    console.log(newCount);
+    await client.update({
+      index: 'bajajfinsearch',
+      id: res['_id'],
+      body: {
+        doc: {
+          count: newCount + 1,
+        },
+      },
+    });
+  });
   return res.send([result, resultSponsored]);
 });
 

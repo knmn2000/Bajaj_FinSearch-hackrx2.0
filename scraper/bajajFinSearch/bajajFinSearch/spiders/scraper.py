@@ -123,7 +123,7 @@ class ScrapeBajajFinserv(scrapy.Spider):
                     "source": response.url,
                 }
                 # self.scraped[len(self.scraped)] = payload
-                es.index(index="bajajfinsearchsponsored", doc_type="Blog", body=payload)
+                es.index(index="test", doc_type="Blog", body=payload)
                 # print(heading)
                 return
 

@@ -83,19 +83,35 @@ function createResultCard(header, text, source, sponsored = false) {
   return z;
 }
 
-// Utility, for future use
-// function debounce(func, wait, immediate) {
-//   var timeout;
-//   return function () {
-//     var context = this,
-//       args = arguments;
-//     var later = function () {
-//       timeout = null;
-//       if (!immediate) func.apply(context, args);
-//     };
-//     var callNow = immediate && !timeout;
-//     clearTimeout(timeout);
-//     timeout = setTimeout(later, wait);
-//     if (callNow) func.apply(context, args);
-//   };
-// }
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function () {
+    var context = this,
+      args = arguments;
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
+var autoSuggest = debounce(function () {
+  const query = document.getElementById('mysearch').value;
+  console.log(query);
+  const url = esroute + 'autosuggest/' + query;
+  http.open('GET', url);
+  http.send();
+  http.onreadystatechange = (e) => {
+    if (http.readyState == 4 && http.status == 200) {
+      try {
+        console.log(http.responseText);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+}, 250);

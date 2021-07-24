@@ -7,6 +7,35 @@ const client = new Client({
   node: 'http://localhost:9200',
 });
 
+server.get('/autosuggest/:slug', async (req, res) => {
+  var keywords = req.params.slug;
+  await client
+    .search({
+      index: 'bajajfinsearch',
+      body: {
+        suggest: {
+          suggestion: {
+            text: keywords,
+            term: {
+              field: 'text',
+            },
+          },
+        },
+      },
+    })
+    .then((response) => {
+      var result = [];
+      response['body']['suggest']['suggestion'].forEach((suggestion) => {
+        suggestionKeyword = suggestion['options'][0];
+        if (suggestionKeyword) {
+          result.push(suggestionKeyword['text']);
+        } else {
+        }
+      });
+
+      console.log(result);
+    });
+});
 // Returning queried results
 server.get('/:slug', async (req, res) => {
   const searchText = req.params.slug;

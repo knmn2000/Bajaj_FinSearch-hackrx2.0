@@ -11,6 +11,7 @@ const client = new Client({
 server.get('/:slug', async (req, res) => {
   const searchText = req.params.slug;
   var fieldsArray;
+  var keywords = searchText.split(' ');
   if (keywords.length > 3) {
     fieldsArray = ['heading', 'text'];
   } else {

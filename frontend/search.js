@@ -3,6 +3,8 @@ const search = document.querySelector('.search');
 const esroute = 'http://localhost:3000/';
 var http = new XMLHttpRequest();
 
+// UTILITY FUNCTIONS
+// ##
 function truncateString(str, num) {
   if (num > str.length) {
     return str;
@@ -11,6 +13,22 @@ function truncateString(str, num) {
     return str + '...';
   }
 }
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function () {
+    var context = this,
+      args = arguments;
+    var later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+// ##
 
 const getResults = () => {
   document.getElementById('searchresults').innerHTML = '';
@@ -23,7 +41,6 @@ const getResults = () => {
   http.onreadystatechange = (e) => {
     if (http.readyState == 4 && http.status == 200) {
       try {
-        console.log(JSON.parse(http.responseText)[0]);
         response = JSON.parse(http.responseText)[0];
         responseSponsored = JSON.parse(http.responseText)[1];
         timeTaken = response['body']['took'];
@@ -65,7 +82,7 @@ mysearch.addEventListener('click', function () {
 
 function createResultCard(header, text, source, sponsored = false) {
   var z = document.createElement('div');
-  z.innerHTML = `<div class="wiki-search-results ${
+  z.innerHTML = `<div class="bajaj-search-results ${
     sponsored ? 'sponsored' : ''
   }">
        ${sponsored ? "<div class='sponsoredtext'>Promoted</div>" : ''}
@@ -82,7 +99,7 @@ function createResultCard(header, text, source, sponsored = false) {
     </div>`;
   return z;
 }
-function createResultSuggestion(header, text, source, sponsored = false) {
+function createResultSuggestion(header) {
   var z = document.createElement('div');
   z.innerHTML = `<div class="suggestion" onclick="getResults();">
         <div class='suggestionheader'>
@@ -92,26 +109,9 @@ function createResultSuggestion(header, text, source, sponsored = false) {
   return z;
 }
 
-function debounce(func, wait, immediate) {
-  var timeout;
-  return function () {
-    var context = this,
-      args = arguments;
-    var later = function () {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    };
-    var callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-    if (callNow) func.apply(context, args);
-  };
-}
-
 var autoSuggest = debounce(function () {
   document.getElementById('searchresults').innerHTML = '';
   const query = document.getElementById('mysearch').value;
-  console.log(query);
   const url = esroute + query + '/true';
   http.open('GET', url);
   http.send();
@@ -121,11 +121,9 @@ var autoSuggest = debounce(function () {
         response = JSON.parse(http.responseText)[0];
         response['body']['hits']['hits'].forEach((card) => {
           var header = card['_source']['heading'];
-          var text = truncateString(card['_source']['text'], 100);
-          var source = card['_source']['source'];
           document
             .getElementById('searchresults')
-            .appendChild(createResultSuggestion(header, text, source));
+            .appendChild(createResultSuggestion(header));
         });
       } catch (error) {
         console.log(error);

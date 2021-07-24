@@ -11,7 +11,6 @@ const client = new Client({
 server.get('/:slug/:autosuggest', async (req, res) => {
   const searchText = req.params.slug;
   const autosuggest = req.params.autosuggest === 'true' ? true : false;
-  console.log(autosuggest);
   var fieldsArray;
   var keywords = searchText.split(' ');
   if (keywords.length > 3) {

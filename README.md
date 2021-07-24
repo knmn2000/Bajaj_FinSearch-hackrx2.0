@@ -13,7 +13,7 @@ _Fast results, always._
 ## Ignore spelling errors
 ![sepling](https://i.ibb.co/5kWZ2FV/autocorrectqueries.png)
 
-## Visualzing data with Kibana
+## Visualizing data with Kibana
 ![Kibana](https://i.ibb.co/FqR02N1/kibana-Dashboard.png)
 
 ----

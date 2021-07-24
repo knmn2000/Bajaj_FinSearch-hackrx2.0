@@ -28,14 +28,10 @@ class ScrapeBajajFinserv(scrapy.Spider):
         "https://www.bajajfinservmarkets.in/insurance/term-life.html",
         "https://www.bajajfinservmarkets.in/insurance/home-insurance.html",
         "https://www.bajajfinservmarkets.in/insurance/term-insurance-plans.html",
-        # didnt check the following 4
         "https://www.bajajfinservmarkets.in/insurance/two-wheeler-insurance.html",
         "https://www.bajajfinservmarkets.in/insurance/pradhan-mantri-fasal-bima-yojana-pmfby.html",
         "https://www.bajajfinservmarkets.in/insurance/compound-interest-calculator.html",
         "https://www.bajajfinservmarkets.in/insurance/human-life-value-calculator-hlv.html",
-        # diff
-        # ideas:
-        #     section/h2[1]/following-sibling::h2[1]/preceding-sibling::*
         "https://www.bajajfinservmarkets.in/insurance/car-insurance.html",
         "https://www.bajajfinservmarkets.in/insurance/endowment-policy.html",
         "https://www.bajajfinservmarkets.in/insurance/types-of-insurance.html",
@@ -48,11 +44,11 @@ class ScrapeBajajFinserv(scrapy.Spider):
             json.dump(self.scraped, f)
 
     def start_requests(self):
-        # for link in self.links:
-        #     sitemapLink = link.split(".html")[0] + "/sitemap.xml"
-        #     yield scrapy.Request(url=sitemapLink, callback=self.parseSitemap)
-        # for link in self.links:
-        #     yield scrapy.Request(url=link, callback=self.parse)
+        for link in self.links:
+            sitemapLink = link.split(".html")[0] + "/sitemap.xml"
+            yield scrapy.Request(url=sitemapLink, callback=self.parseSitemap)
+        for link in self.links:
+            yield scrapy.Request(url=link, callback=self.parse)
         for link in self.links:
             yield scrapy.Request(url=link, callback=self.parse_priority)
 
@@ -68,14 +64,6 @@ class ScrapeBajajFinserv(scrapy.Spider):
                 yield scrapy.Request(url=link, callback=self.parse)
 
     def parse_priority(self, response):
-        # <IDEAS>
-        # print(response.xpath("//section[@class='paragraph-rte ']/h2//text()"))
-        # print(response.xpath("//*/p[preceding-sibling::h2]"))
-        # get all tags between h2
-        # response.xpath("//*[preceding-sibling::h2[1] and following-sibling::h2[1]]")[
-        # content = response.xpath("//div[contains(@class, 'parawithrte')]//h2")
-        # </IDEAS>
-
         content = response.xpath("//div[contains(@class, 'parawithrte')]//*")
         headerContentScraped = {}
         lastH2 = None
@@ -107,13 +95,9 @@ class ScrapeBajajFinserv(scrapy.Spider):
                             ).findAll(text=True)
                         ).replace("\n", "")
             headerContentScraped[lastH2] = {
-                # "html": webpageScraped,
                 "html": "HTML CONTENT",
                 "text": webtextScraped,
             }
-        # TODO
-        # UPLOAD INDIVIDUAL HEADER DOCS TO ELASTIC SEARCH INSTEAD OF THE WHOLE JSON
-        # self.scraped[response.url] = headerContentScraped
         for heading in headerContentScraped:
             if heading:
                 payload = {
@@ -122,19 +106,18 @@ class ScrapeBajajFinserv(scrapy.Spider):
                     "text": headerContentScraped[heading]["text"],
                     "source": response.url,
                 }
+                # Uncomment to dump data to json
                 # self.scraped[len(self.scraped)] = payload
+
+                # DB for testing purposes
                 es.index(index="test", doc_type="Blog", body=payload)
-                # print(heading)
+                # DB
+                # es.index(index="bajajfinsearch", doc_type="Blog", body=payload)
+                # DB for sponosored documents
+                # es.index(index="bajajfinsearchsponsored", doc_type="Blog", body=payload)
                 return
 
     def parse(self, response):
-        # <IDEAS>
-        # print(response.xpath("//section[@class='paragraph-rte ']/h2//text()"))
-        # print(response.xpath("//*/p[preceding-sibling::h2]"))
-        # get all tags between h2
-        # response.xpath("//*[preceding-sibling::h2[1] and following-sibling::h2[1]]")[
-        # content = response.xpath("//div[contains(@class, 'parawithrte')]//h2")
-        # </IDEAS>
 
         content = response.xpath("//div[contains(@class, 'parawithrte')]//*")
         headerContentScraped = {}
@@ -167,13 +150,11 @@ class ScrapeBajajFinserv(scrapy.Spider):
                             ).findAll(text=True)
                         ).replace("\n", "")
             headerContentScraped[lastH2] = {
+                # can scrape html content if required
                 # "html": webpageScraped,
                 "html": "HTML CONTENT",
                 "text": webtextScraped,
             }
-        # TODO
-        # UPLOAD INDIVIDUAL HEADER DOCS TO ELASTIC SEARCH INSTEAD OF THE WHOLE JSON
-        # self.scraped[response.url] = headerContentScraped
         for heading in headerContentScraped:
             if heading:
                 payload = {
@@ -182,12 +163,8 @@ class ScrapeBajajFinserv(scrapy.Spider):
                     "text": headerContentScraped[heading]["text"],
                     "source": response.url,
                 }
+                # Uncomment to dump data to json
                 # self.scraped[len(self.scraped)] = payload
+
                 es.index(index="bajajfinsearch", doc_type="Blog", body=payload)
 
-
-# search
-# result body
-# header
-# text content (low opacity) -> enlarge on click
-# source

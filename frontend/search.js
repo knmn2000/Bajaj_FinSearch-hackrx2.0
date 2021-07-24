@@ -3,21 +3,6 @@ const search = document.querySelector('.search');
 const esroute = 'http://localhost:3000/';
 var http = new XMLHttpRequest();
 
-// function debounce(func, wait, immediate) {
-//   var timeout;
-//   return function () {
-//     var context = this,
-//       args = arguments;
-//     var later = function () {
-//       timeout = null;
-//       if (!immediate) func.apply(context, args);
-//     };
-//     var callNow = immediate && !timeout;
-//     clearTimeout(timeout);
-//     timeout = setTimeout(later, wait);
-//     if (callNow) func.apply(context, args);
-//   };
-// }
 function truncateString(str, num) {
   if (num > str.length) {
     return str;
@@ -30,7 +15,6 @@ function truncateString(str, num) {
 const getResults = () => {
   const query = document.getElementById('mysearch').value;
   const url = esroute + query;
-  // const response = Object($.get(url));
   var response;
   var timeTaken;
   http.open('GET', url);
@@ -58,11 +42,7 @@ const getResults = () => {
               )
             );
         }
-        // const finalResponse = responseSponsored['body']['hits']['hits'].concat(
-        //   response['body']['hits']['hits']
-        // );
         response['body']['hits']['hits'].forEach((card) => {
-          // finalResponse.forEach((card) => {
           var header = card['_source']['heading'];
           var text = truncateString(card['_source']['text'], 100);
           var source = card['_source']['source'];
@@ -75,10 +55,6 @@ const getResults = () => {
       }
     }
   };
-  // const response = console.log(response['responseJSON']);
-  // document
-  //   .getElementById('searchresults')
-  //   .appendChild(createResultCard('1', '2'));
 };
 
 var mysearch = document.getElementById('searchicon');
@@ -106,3 +82,20 @@ function createResultCard(header, text, source, sponsored = false) {
     </div>`;
   return z;
 }
+
+// Utility, for future use
+// function debounce(func, wait, immediate) {
+//   var timeout;
+//   return function () {
+//     var context = this,
+//       args = arguments;
+//     var later = function () {
+//       timeout = null;
+//       if (!immediate) func.apply(context, args);
+//     };
+//     var callNow = immediate && !timeout;
+//     clearTimeout(timeout);
+//     timeout = setTimeout(later, wait);
+//     if (callNow) func.apply(context, args);
+//   };
+// }

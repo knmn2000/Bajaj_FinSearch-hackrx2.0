@@ -13,6 +13,9 @@ _Fast results, always._
 ## Ignore spelling errors
 ![sepling](https://i.ibb.co/5kWZ2FV/autocorrectqueries.png)
 
+## Search suggestions
+![suggestions](https://i.ibb.co/mXvQvhz/suggestions.png)
+
 ## Visualizing data with Kibana
 ![Kibana](https://i.ibb.co/FqR02N1/kibana-Dashboard.png)
 
